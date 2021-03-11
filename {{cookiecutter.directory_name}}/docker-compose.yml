@@ -1,0 +1,92 @@
+version: '3.5'
+services:
+  {{cookiecutter.directory_name}}-flask: &{{cookiecutter.directory_name}}
+    command: web
+    restart: always
+    image: {{cookiecutter.directory_name}}-flask
+    build:
+      context: .
+    ports:
+      - 5001:5000
+    volumes:
+      - ./app:/usr/src/app/app_container
+      - ./bucket:/usr/src/app/bucket
+    environment:
+      CELERY_BROKER_URL: amqp://rabbitmq:rabbitmq@{{cookiecutter.directory_name}}-rabbit:5672/
+      USE_S3: "False"
+      BUCKET_NAME: bucket
+      ENDPOINT_URL: https://s3.us-south.objectstorage.softlayer.net
+      WEB_DATABASE_URL: postgresql://root:root@postgres:5432/da-{{cookiecutter.directory_name}}
+      MEMCACHED_SERVERS: memcached
+      MEMCACHED_USERNAME: admin
+      MEMCACHED_PASSWORD: admin
+    networks:
+      {{cookiecutter.directory_name}}-network:
+        aliases:
+          - {{cookiecutter.directory_name}}-flask
+    depends_on:
+      - postgres
+      - {{cookiecutter.directory_name}}-rabbit
+
+  {{cookiecutter.directory_name}}-celery:
+    <<: *{{cookiecutter.directory_name}}
+    command: worker
+    ports:
+      - 5002:5000
+    networks:
+      {{cookiecutter.directory_name}}-network:
+        aliases:
+          - {{cookiecutter.directory_name}}-celery
+
+  postgres:
+    container_name: postgres
+    image: postgres:11
+    hostname: postgres
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: {{cookiecutter.directory_name}}, {{cookiecutter.directory_name}}-integration, {{cookiecutter.directory_name}}-migration
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+#    command:
+#      - -c
+#      - config_file=/etc/postgresql/postgresql.conf
+    ports:
+      - "15433:5432"
+    networks:
+      {{cookiecutter.directory_name}}-network:
+        aliases:
+          - postgres
+    volumes:
+      - ./extras/postgres/scripts:/docker-entrypoint-initdb.d
+      - ./extras/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+
+  memcached:
+    container_name: memcached
+    image: memcached:alpine
+    hostname: memcached
+    ports:
+      - "11211:11211"
+    networks:
+      {{cookiecutter.directory_name}}-network:
+        aliases:
+          - memcached
+
+  {{cookiecutter.directory_name}}-rabbit:
+    image: "rabbitmq:3-management"
+    hostname: "{{cookiecutter.directory_name}}-rabbit"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "ALSDJGSODISETRA"
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "rabbitmq"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      {{cookiecutter.directory_name}}-network:
+        aliases:
+          - {{cookiecutter.directory_name}}-rabbit
+
+networks:
+  {{cookiecutter.directory_name}}-network:
+    name: {{cookiecutter.directory_name}}-network
+    driver: bridge

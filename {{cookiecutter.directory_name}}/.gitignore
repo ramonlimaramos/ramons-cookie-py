@@ -1,0 +1,77 @@
+# Ignore Python build artifacts.
+MANIFEST
+build/
+dist/
+*.egg-info/
+*.pyc
+*.pyo
+
+# Ignore Coverage report.
+.coverage
+.coverage.*
+cov.xml
+cov_annotate/
+cov_html/
+
+# Ignore pytest's JUnit xml report.
+pytest-report.xml
+
+# Ignore pyenv files.
+.python-version
+
+
+# Ignore virtualenv environments.
+.venv*/
+venv*/
+
+
+# Ignore Vagrant runtime files.
+.vagrant/
+
+
+# Ignore settings for various IDEs.
+.idea/
+.project/
+.pydevproject/
+nbproject/
+.vscode/
+*.code-workspace
+
+
+# Ignore OS metadata files.
+.DS_Store
+
+
+# Ignore pycache files
+.pytest_cache
+__pycache__/
+static/temp
+!static/temp/.keep
+
+# Environment configuration related files
+.env
+.travis/env
+!.travis/env/.env
+.travis/env.tar
+
+# Makefile stuff
+.checkpoint
+
+
+# local development bucket
+bucket/
+
+# Coverage report
+coverage.xml
+
+# Documentation build dir
+docs/_build
+docs/node_modules
+docs/*.jar
+docs/*.zip
+
+# Docker Compose Data
+extras/*/data/
+
+# Fast-text
+tools/
