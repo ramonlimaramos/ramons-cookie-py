@@ -7,7 +7,7 @@
     "github_usr": "What's your github user?",
     "pyrunner": "What's your python command runner? (Eg.: python or python3)",
     "pyversion": "What's the python version for your runner? (Eg.: python3.6, python3.7, python3.8)",
-    "description": "{{ cookiecutter.project_name }} is awesome",
+    "description": "{{ '%r'|format(cookiecutter.project_name) }} is awesome",
     "author": "Ramon de Lima Ramos <ramonlimaramos@gmail.com>",
     "version": "0.1.0",
     "license": "MIT"
